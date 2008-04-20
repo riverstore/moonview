@@ -25,8 +25,8 @@ namespace MoonView.Compression
                     try
                     {
                         //Unrar file in temporary directory
-                        string destPath = System.IO.Path.Combine(Environment.CurrentDirectory, "Temp");
-                        unrar.DestinationPath = destPath;
+                        string tempDir = System.IO.Path.Combine(Environment.CurrentDirectory, "Temp");
+                        unrar.DestinationPath = tempDir;
                         unrar.Open(rarPath, Unrar.OpenMode.Extract);
                         // Get destination from user
                         while (unrar.ReadHeader())
@@ -40,7 +40,7 @@ namespace MoonView.Compression
                         }
                         unrar.Close();
                         // 
-                        string tempPath = System.IO.Path.Combine(destPath, filePath);
+                        string tempPath = System.IO.Path.Combine(tempDir, filePath);
                         byte[] buffer = File.ReadAllBytes(tempPath);
                         File.Delete(tempPath); //Remove file
                         return buffer;

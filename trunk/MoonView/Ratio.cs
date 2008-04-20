@@ -36,9 +36,9 @@ namespace MoonView
                     return ((double)maxHeight) / height; //fit width
             }
             else if (type == RatioType.FitWidth)
-                return ((double)maxHeight) / height;
-            else if (type == RatioType.FitHeight)
                 return ((double)maxWidth) / width;
+            else if (type == RatioType.FitHeight)        
+                return ((double)maxHeight) / height;
 
             return 1;
         }

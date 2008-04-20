@@ -10,6 +10,7 @@ namespace MoonView.Path
     {
         //string _fullPath; //Full directory path
         DirectoryInfo _dirInfo;
+        bool _showHidden = false;
 
         /// <summary>
         /// Directory name
@@ -62,7 +63,12 @@ namespace MoonView.Path
                 //Retrieve directories
                 List<IDirectoryInfo> dirInfoList = new List<IDirectoryInfo>();
                 foreach (DirectoryInfo tempDirInfo in _dirInfo.GetDirectories())
+                {
+                    if ((tempDirInfo.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden &&
+                        (tempDirInfo.Attributes & FileAttributes.System) == FileAttributes.System)
+                        continue;
                     dirInfoList.Add(new BaseDirectoryInfo(tempDirInfo));
+                }
                 return dirInfoList.ToArray();
             }
         }
@@ -75,7 +81,12 @@ namespace MoonView.Path
             get {
                 List<IFileInfo> fileInfoList = new List<IFileInfo>();
                 foreach (FileInfo tempFileInfo in _dirInfo.GetFiles())
+                {
+                    if ((tempFileInfo.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden &&
+                        (tempFileInfo.Attributes & FileAttributes.System) == FileAttributes.System)
+                        continue;
                     fileInfoList.Add(new BaseFileInfo(tempFileInfo));
+                }
                 return fileInfoList.ToArray();
             }
         }

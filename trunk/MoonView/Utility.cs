@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -82,8 +83,10 @@ namespace MoonView
         {
             Bitmap smallIcon = new Bitmap(System.IO.Path.Combine(SMALL_ICON_DIRECTORY, filePath));
             Bitmap largeIcon = new Bitmap(System.IO.Path.Combine(LARGE_ICON_DIRECTORY, filePath));
-            _smallMimeIconDict.Add(extension, smallIcon);
-            _largeMimeIconDict.Add(extension, largeIcon);
+            if (!_smallMimeIconDict.ContainsKey(extension))
+                _smallMimeIconDict.Add(extension, smallIcon);
+            if (!_largeMimeIconDict.ContainsKey(extension))
+                _largeMimeIconDict.Add(extension, largeIcon);
         }
 
         /// <summary>
@@ -118,6 +121,7 @@ namespace MoonView
             {
                 case ".zip":
                 case ".rar":
+                case ".7z":
                     return true;
                 default:
                     return false;
@@ -132,6 +136,27 @@ namespace MoonView
                 ms.Position = 0;
                 return ms.ToArray();
             }
+        }
+
+        private static Regex _reXp = new Regex(@"([\w\W]+?)([\d]+)([\w\W]*?)\.([\w]+)", RegexOptions.IgnoreCase);
+        public static int CompareStringXp(string strX, string strY)
+        {
+            strX = strX.Replace(" ", ""); //Remove space
+            strY = strY.Replace(" ", ""); //Remove space
+            Match matchX = _reXp.Match(strX);
+            Match matchY = _reXp.Match(strY);
+
+            if (!matchX.Success || !matchY.Success)
+                return strX.CompareTo(strY);
+
+            if (!matchX.Groups[1].Value.Equals(matchY.Groups[1].Value))
+                return strX.CompareTo(strY);
+
+            //Avoid problem with number is too large int.MaxValue = 2,147,483,647
+            if (matchX.Groups[2].Length > 9 || matchY.Groups[2].Length > 9)
+                return strX.CompareTo(strY);
+
+            return int.Parse(matchX.Groups[2].Value) - int.Parse(matchY.Groups[2].Value);
         }
     }
 }

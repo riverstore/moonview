@@ -29,9 +29,14 @@ namespace MoonView.Thumbnail
 
         public void Run(ThumbnailView thumbnailView, ThumbnailWorkerState state)
         {
-            _thumbnailView = thumbnailView;
-            _tnvState = state;
-            _bgWorker.RunWorkerAsync();
+
+
+            foreach (ClearListCompleted instance in _clearListCompleted.GetInvocationList())
+                instance(_thumbnailView, _tnvState);
+
+            //_thumbnailView = thumbnailView;
+            //_tnvState = state;
+            //_bgWorker.RunWorkerAsync();
         }
 
         void _bgWorker_DoWork(object sender, DoWorkEventArgs e)
