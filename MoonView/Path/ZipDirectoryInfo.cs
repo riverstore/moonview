@@ -1,34 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace MoonView.Path
 {
-	public class ZipDirectoryInfo : IDirectoryInfo
+    public class ZipDirectoryInfo : IDirectoryInfo
     {
-		//Value
-		string _zipPath;
-		IDirectoryInfo _parentDir;
+        //Value
+        string _zipPath;
+        IDirectoryInfo _parentDir;
         DateTime _lastModifiedTime;
-		
-		//Collection
-		List<IFileInfo> _fileInfos = new List<IFileInfo>();
-		List<IDirectoryInfo> _dirInfos = new List<IDirectoryInfo>();
-		
+
+        //Collection
+        List<IFileInfo> _fileInfos = new List<IFileInfo>();
+        List<IDirectoryInfo> _dirInfos = new List<IDirectoryInfo>();
+
         /// <summary>
         /// Directory name
         /// </summary>
-        public string Name { 
-        	get { return System.IO.Path.GetFileName(_zipPath); }
+        public string Name
+        {
+            get { return System.IO.Path.GetFileName(_zipPath); }
         }
 
         /// <summary>
         /// Full path of the directory
         /// </summary>
-        public string FullPath { 
-        	get { return _zipPath; }
+        public string FullPath
+        {
+            get { return _zipPath; }
         }
 
         /// <summary>
@@ -42,47 +45,53 @@ namespace MoonView.Path
         /// <summary>
         /// Parent directory info
         /// </summary>
-        public IDirectoryInfo Parent { 
-        	get { return _parentDir; }
+        public IDirectoryInfo Parent
+        {
+            get { return _parentDir; }
         }
 
         /// <summary>
         /// Get directories within this directory
         /// </summary>
-        public IDirectoryInfo[] Directories { 
-        	get { return _dirInfos.ToArray(); }
+        public IDirectoryInfo[] Directories
+        {
+            get { return _dirInfos.ToArray(); }
         }
 
         /// <summary>
         /// Get files within this directory
         /// </summary>
-        public IFileInfo[] Files { 
-        	get { return _fileInfos.ToArray(); }
+        public IFileInfo[] Files
+        {
+            get { return _fileInfos.ToArray(); }
         }
-        
+
         public ZipDirectoryInfo(BaseFileInfo fileInfo)
         {
-        	//TODO Add directory support
-        	_zipPath = fileInfo.FullPath;
+            //TODO Add directory support
+            _zipPath = fileInfo.FullPath;
             _lastModifiedTime = fileInfo.LastModifiedTime;
-        	_parentDir = fileInfo.Directory;
-        	
-        	using (ZipInputStream zs = new ZipInputStream(System.IO.File.OpenRead(_zipPath))) 
-        	{
-				ZipEntry entry;
-				while ((entry = zs.GetNextEntry()) != null)
-				{
-					if (!entry.IsFile)
-						continue;
-					_fileInfos.Add(new ZipFileInfo(this, _zipPath, entry));
-					_fileInfos.Sort();
-				}
-        	}
+            _parentDir = fileInfo.Directory;
+
+            using (FileStream fs = File.OpenRead(_zipPath))
+            {
+                using (ZipInputStream zs = new ZipInputStream(fs))
+                {
+                    ZipEntry entry;
+                    while ((entry = zs.GetNextEntry()) != null)
+                    {
+                        if (!entry.IsFile)
+                            continue;
+                        _fileInfos.Add(new ZipFileInfo(this, _zipPath, entry));
+                        _fileInfos.Sort();
+                    }
+                }
+            }
         }
-        
-        public int CompareTo(IDirectoryInfo dirInfo) 
-	    {
-	    	return Name.CompareTo(dirInfo.Name);
-        }        
+
+        public int CompareTo(IDirectoryInfo dirInfo)
+        {
+            return Name.CompareTo(dirInfo.Name);
+        }
     }
 }

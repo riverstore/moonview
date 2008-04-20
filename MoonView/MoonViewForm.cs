@@ -1,6 +1,7 @@
 ﻿//System NS
 using System;
 using System.IO;
+using SysPath = System.IO.Path;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -22,6 +23,8 @@ namespace MoonView
     {
         ViewForm _viewForm;
         Navigation _navigation;
+        AboutBox _aboutBox;
+        BackgroundWorker _worker;
 
         /// <summary>
         /// Constructor
@@ -30,6 +33,7 @@ namespace MoonView
         {
             InitializeComponent();
             Utility.Initialise();
+            _aboutBox = new MoonView.Forms.AboutBox();
             this.directoryTreeView1.Initialise(this);
             this.thumbnailView1.Initialise(this);
             _viewForm = new ViewForm();
@@ -38,7 +42,13 @@ namespace MoonView
             if (args.Length < 1)
                 Open(this, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
             else
-                Open(this, args[0]);
+                Open(this, args[0]); 
+        }
+
+        void _timer_Tick(object sender, EventArgs e)
+        {
+
+            //throw new NotImplementedException();
         }
 
         public void Open(object sender, string path)
@@ -72,6 +82,7 @@ namespace MoonView
                         new BaseDirectoryInfo(System.IO.Path.GetDirectoryName(path));
                     switch (ext)
                     {
+                            //TODO Refactor combine with ShowArchive
                         case ".zip":
                             ZipDirectoryInfo zipDirInfo = new ZipDirectoryInfo(new BaseFileInfo(path));
                             ShowDirectory(sender, zipDirInfo);
@@ -80,6 +91,10 @@ namespace MoonView
                             RarDirectoryInfo rarDirInfo = new RarDirectoryInfo(new BaseFileInfo(path));
                             ShowDirectory(sender, rarDirInfo);
                             return;
+                        case ".7z":
+                            SevenZipDirectoryInfo sevenZipInfo = new SevenZipDirectoryInfo(new BaseFileInfo(path));
+                            ShowDirectory(sender, sevenZipInfo);
+                            break;
                         default:
                             break;
                     }
@@ -132,6 +147,10 @@ namespace MoonView
                     RarDirectoryInfo rarDirInfo = new RarDirectoryInfo((BaseFileInfo)fileInfo);
                     ShowDirectory(sender, rarDirInfo);
                     break;
+                case ".7z":
+                    SevenZipDirectoryInfo sevenZipInfo = new SevenZipDirectoryInfo((BaseFileInfo)fileInfo);
+                    ShowDirectory(sender, sevenZipInfo);
+                    break;
                 default:
                     break;
             }
@@ -142,6 +161,28 @@ namespace MoonView
             toolStripProgressBar1.Value = value;
         }
 
+        private void Exit()
+        {
+            //TODO Remove temporary files
+            thumbnailView1.AbortLoading();
+            if (thumbnailView1.IsBusy)
+                Thread.Sleep(100);
+
+            //Clean up
+            string tempDir = SysPath.Combine(Environment.CurrentDirectory, "Temp");
+            try
+            {
+                if (Directory.Exists(tempDir))
+                    Directory.Delete(tempDir, true);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+
+            Application.Exit();
+        }
+
         /// <summary>
         /// Handle main form closing event
         /// </summary>
@@ -149,37 +190,7 @@ namespace MoonView
         /// <param name="e"></param>
         private void MoonViewForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason != CloseReason.ApplicationExitCall)
-                _viewForm.Visible = false;
-
-            //Cancel thumbnail loading and wait for cancellation completed
-            if (thumbnailView1.IsBusy)
-            {
-                ThreadPool.QueueUserWorkItem(new WaitCallback(ExitWait)); //Using seperate thread to wait for all work exited
-                //TODO Remove temporary files
-                e.Cancel = true; //Cancel closing for allowing ExitWait thread run
-            }
-            else
-                Application.Exit();
-        }
-
-        /// <summary>
-        /// Threadpool method, wait for all background task completed before exit application
-        /// </summary>
-        /// <param name="stateObj"></param>
-        private void ExitWait(object stateObj)
-        {
-            thumbnailView1.AbortLoading();
-            if (thumbnailView1.IsBusy)
-                Thread.Sleep(100);
-            Application.Exit();
-        }
-
-
-
-        private void directoryTreeView1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-
+            Exit();
         }
 
         private bool IsCurrentDirectory(string dirPath)
@@ -204,6 +215,21 @@ namespace MoonView
         {
             if (e.KeyCode == Keys.Enter)
                 Open(comboBox1, comboBox1.Text);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Exit();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _aboutBox.Show();
         }
     }
 }

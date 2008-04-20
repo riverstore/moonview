@@ -15,12 +15,21 @@ namespace MoonView.Forms
 {
     public partial class ViewForm : Form
     {
+        public class FileComparer : IComparer<IFileInfo>
+        {
+            public int Compare(IFileInfo fileX, IFileInfo fileY)
+            {
+                return Utility.CompareStringXp(fileX.Name, fileY.Name);
+            }
+        }
+
         //Values
         int _currIndex = 0;
         double _zoomRatio = 1.0;
         Ratio.RatioType _ratioType = Ratio.RatioType.FitImage;
 
         //Object
+        FileComparer _comparer = new FileComparer();
         IDirectoryInfo _dirInfo;
 
         //Collection
@@ -63,12 +72,14 @@ namespace MoonView.Forms
             {
                 IFileInfo thisFileInfo = fileInfoArray[i];
                 if (Utility.IsSupported(thisFileInfo.Extension))
-                {
                     _fileInfoList.Add(thisFileInfo);
-                    Console.WriteLine(thisFileInfo.Name);
-                }
+            }
+            _fileInfoList.Sort(_comparer);
+            for (int i = 0; i < _fileInfoList.Count; i++)
+            {
+                IFileInfo thisFileInfo = _fileInfoList[i];
                 if (fileInfo.Name.Equals(thisFileInfo.Name))
-                    _currIndex = _fileInfoList.Count - 1;
+                    _currIndex = i;
             }
             UpdateButtonStatus();
             ShowImage(_currIndex);
@@ -89,8 +100,9 @@ namespace MoonView.Forms
             {
                 this.pictureBox1.Image = this.pictureBox1.ErrorImage;
             }
-            this.panel1.VerticalScroll.Value = this.panel1.VerticalScroll.Minimum;
-            this.panel1.HorizontalScroll.Value = this.panel1.HorizontalScroll.Minimum;
+            this.pictureBox1.Location = Point.Empty;
+            this.panel1.VerticalScroll.Value = 0;
+            this.panel1.HorizontalScroll.Value = 0;
             this.panel1.Focus();
             ResizePictureBox();
         }
@@ -380,6 +392,13 @@ namespace MoonView.Forms
         private void NoMaximizeWindow(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Normal;
+        }
+
+        private void FitWidthButton_Click(object sender, EventArgs e)
+        {
+            _ratioType = Ratio.RatioType.FitWidth;
+            _zoomRatio = 1;
+            ResizePictureBox();
         }
     }
 }

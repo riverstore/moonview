@@ -23,7 +23,7 @@ namespace MoonView.Thumbnail
 
         //Values
         const int BORDER_WIDTH = 1;
-        const int MAX_CONCURRENT_LOADING = 1;
+        const int MAX_CONCURRENT_LOADING = 2;
 
         //Object
         ThumbnailView _thumbnailView;
@@ -230,11 +230,20 @@ namespace MoonView.Thumbnail
                     Bitmap bitmap;
                     using (System.IO.MemoryStream ms = new System.IO.MemoryStream(bitmapBytes))
                         bitmap = new Bitmap(ms);
-                    //g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    
                     double scale = Ratio.CalculateScale(bitmap.Size, newBitmap.Size, Ratio.RatioType.FitImage);
                     Size size = new Size((int)(bitmap.Size.Width * scale), (int)(bitmap.Size.Height * scale));
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+                    //Smoothing mode
+                    //g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+                    //g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
+                    //g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    //g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+                    //Draw image
                     g.DrawImage(bitmap, new Rectangle((imageSize.Width - size.Width) / 2, (imageSize.Height - size.Height) / 2, size.Width, size.Height));
+
+                    //Add border
                     g.DrawRectangle(new Pen(Color.DarkGray, BORDER_WIDTH),
                                     new Rectangle(0, 0, imageSize.Width - 1, imageSize.Height - 1));
                 }

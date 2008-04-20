@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoonView", "MoonView.csproj", "{BCAAD8C5-D9ED-4FEB-868B-386B20BE0A9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "7ZipLib", "..\7ZipLib\7ZipLib.csproj", "{2DBA9377-4C1D-4BB5-A453-F5EC24F8240F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BCAAD8C5-D9ED-4FEB-868B-386B20BE0A9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCAAD8C5-D9ED-4FEB-868B-386B20BE0A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCAAD8C5-D9ED-4FEB-868B-386B20BE0A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCAAD8C5-D9ED-4FEB-868B-386B20BE0A9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DBA9377-4C1D-4BB5-A453-F5EC24F8240F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DBA9377-4C1D-4BB5-A453-F5EC24F8240F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DBA9377-4C1D-4BB5-A453-F5EC24F8240F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DBA9377-4C1D-4BB5-A453-F5EC24F8240F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

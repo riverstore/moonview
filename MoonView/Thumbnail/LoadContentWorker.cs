@@ -17,15 +17,12 @@ namespace MoonView.Thumbnail
         ThumbnailView _thumbnailView;
         ThumbnailWorkerState _tnvState;
 
-        bool _updating = false;
-
         //
         BackgroundWorker _bgWorker;
-        System.Windows.Forms.Timer _timer;
 
         //Collection
+        List<ListViewItem> _listViewItemList = new List<ListViewItem>();
         List<ThumbnailMetaItem> _thumbnailItemList = new List<ThumbnailMetaItem>();
-        Queue<ThumbnailMetaItem> _metaItemQueue = new Queue<ThumbnailMetaItem>();
 
         public event LoadContentCompleted OnCompleted
         {
@@ -40,20 +37,6 @@ namespace MoonView.Thumbnail
             _bgWorker.DoWork += new DoWorkEventHandler(_bgWorker_DoWork);
             _bgWorker.ProgressChanged += new ProgressChangedEventHandler(_bgWorker_ProgressChanged);
             _bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_bgWorker_RunWorkerCompleted);
-
-            _timer = new Timer();
-            _timer.Interval = 100;
-            _timer.Tick += new EventHandler(_timer_Tick);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void _timer_Tick(object sender, EventArgs e)
-        {
-            LoadContent(5);
         }
 
         /// <summary>
@@ -66,7 +49,6 @@ namespace MoonView.Thumbnail
             _thumbnailView = thumbnailView;
             _tnvState = state;
 
-            _timer.Start();
             _bgWorker.RunWorkerAsync();
         }
 
@@ -79,8 +61,6 @@ namespace MoonView.Thumbnail
         {
             if (_tnvState.Cancel) return;
 
-            CreateEmptyBitmap();
-
             //Show all directory and files (empty box)
             //Image emptyImage = GetThumbnailBitmap(null);
 
@@ -89,53 +69,19 @@ namespace MoonView.Thumbnail
                 this.AddItem("..", "Parent Folder", _tnvState.DirectoryInfo.Parent);
 
             //Show directories
-            foreach (IDirectoryInfo dirInfo in _tnvState.DirectoryInfo.Directories)
+            IDirectoryInfo[] dirInfoList = _tnvState.DirectoryInfo.Directories;
+            foreach (IDirectoryInfo dirInfo in dirInfoList)
             {
                 if (_tnvState.Cancel) return;
                 this.AddItem(dirInfo);
             }
 
             //Show files
-            foreach (IFileInfo fileInfo in _tnvState.DirectoryInfo.Files)
+            IFileInfo[] fileInfoList = _tnvState.DirectoryInfo.Files;
+            foreach (IFileInfo fileInfo in fileInfoList)
             {
                 if (_tnvState.Cancel) return;
                 this.AddItem(fileInfo);
-            }
-
-            while (!_tnvState.Cancel)
-            {
-                lock (_metaItemQueue)
-                {
-                    if (_metaItemQueue.Count == 0)
-                        break;
-                }
-                System.Threading.Thread.Sleep(250);
-            }
-            _timer.Stop();
-        }
-
-        void LoadContent(int limit)
-        {
-            List<ThumbnailMetaItem> tempList = new List<ThumbnailMetaItem>();
-            lock (_metaItemQueue)
-            {
-                int i = 0;
-                while (_metaItemQueue.Count > 0)
-                {
-                    if (i > limit)
-                        break;
-                    tempList.Add(_metaItemQueue.Dequeue());
-                    i++;
-                }
-            }
-
-            foreach (ThumbnailMetaItem metaItem in tempList)
-            {
-                _thumbnailView.BeginUpdate();
-                _thumbnailView.Items.Add(metaItem.ListViewItem);
-                if (_thumbnailView.View == View.Details) //Resize columns in Detail view
-                    _thumbnailView.ResizeColumns();
-                _thumbnailView.EndUpdate();
             }
         }
 
@@ -169,11 +115,26 @@ namespace MoonView.Thumbnail
         /// <param name="e"></param>
         void _bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            _bgWorker_ProgressChanged(null, null); //Show any left over contents
+            _thumbnailView.BeginUpdate();
+
+            //Clear old listview items
+            _thumbnailView.Items.Clear();
+            _thumbnailView.LargeImageList.Images.Clear();
+            _thumbnailView.SmallImageList.Images.Clear();
+
+            //Create temporary empty bitmap
+            CreateEmptyBitmap();
+
+            //Add new listview items
+            _thumbnailView.Items.AddRange(_listViewItemList.ToArray());
+            if (_thumbnailView.View == View.Details) //Resize columns in Detail view
+                _thumbnailView.ResizeColumns();
             _thumbnailView.Sort(); //Sort items
+            _thumbnailView.EndUpdate();
 
             Queue<ThumbnailMetaItem> metaItemQueue = new Queue<ThumbnailMetaItem>();
 
+            //TODO Shall replace Queue with List to improve performance
             //TODO Add empty box image to index 0 of Large and Small imageList
             foreach (ThumbnailMetaItem metaItem in _thumbnailItemList)
             {
@@ -181,7 +142,10 @@ namespace MoonView.Thumbnail
                     break;
                 metaItemQueue.Enqueue(metaItem);
             }
+
+            //Clear data
             _thumbnailItemList.Clear();
+            _listViewItemList.Clear();
 
             //Call delegate
             foreach (LoadContentCompleted instance in _loadEmptyBoxesCompleted.GetInvocationList())
@@ -207,8 +171,7 @@ namespace MoonView.Thumbnail
                 lvItem.SubItems.Add("Folder");
             lvItem.SubItems.Add(fsInfo.LastModifiedTime.ToString("G")); //Date
 
-            _tnvState.ListViewDict.Add(lvItem, fsInfo);
-            AddItem(new ThumbnailMetaItem(fsInfo, lvItem));
+            AddItem(lvItem, fsInfo);
         }
 
         /// <summary>
@@ -224,19 +187,20 @@ namespace MoonView.Thumbnail
             lvItem.SubItems.Add(type); //Type
             lvItem.SubItems.Add(""); //Date
 
-            _tnvState.ListViewDict.Add(lvItem, fsInfo);
-            AddItem(new ThumbnailMetaItem(fsInfo, lvItem));
+            AddItem(lvItem, fsInfo);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="metaItem"></param>
-        void AddItem(ThumbnailMetaItem metaItem)
+        void AddItem(ListViewItem lvItem, IFSInfo fsInfo)
         {
+            _listViewItemList.Add(lvItem);
+            _tnvState.ListViewDict.Add(lvItem, fsInfo);
+
+            ThumbnailMetaItem metaItem = new ThumbnailMetaItem(fsInfo, lvItem);
             _thumbnailItemList.Add(metaItem);
-            lock (_metaItemQueue)
-                _metaItemQueue.Enqueue(metaItem);
         }
 
         /// <summary>

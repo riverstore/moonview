@@ -54,8 +54,8 @@ namespace MoonView.Thumbnail
     {
         //Object
         MoonViewForm _parent;
-        ClearListWorker _clearListWorker;
-        LoadContentWorker _loadEmptyBoxesWorker;
+        //ClearListWorker _clearListWorker;
+        LoadContentWorker _loadContentWorker;
         LoadImageWorker _loadImageWorker;
         IDirectoryInfo _dirInfo;
         ThumbnailWorkerState _thumbnailWorkerState;
@@ -73,8 +73,6 @@ namespace MoonView.Thumbnail
         Queue<object[]> _imageQueue = new Queue<object[]>();
         Dictionary<ListViewItem, IFSInfo> _lvItemDict = new Dictionary<ListViewItem, IFSInfo>();
 
-
-
         public bool IsBusy
         {
             get { return _loading; }
@@ -86,18 +84,17 @@ namespace MoonView.Thumbnail
         public ThumbnailView()
             : base()
         {
-            _clearListWorker = new ClearListWorker();
-            _loadEmptyBoxesWorker = new LoadContentWorker();
+            //_clearListWorker = new ClearListWorker();
+            _loadContentWorker = new LoadContentWorker();
             _loadImageWorker = new LoadImageWorker();
 
-            _clearListWorker.OnCompleted += new ClearListCompleted(_loadEmptyBoxesWorker.Run);
-            _loadEmptyBoxesWorker.OnCompleted += new LoadContentCompleted(_loadImageWorker.Run);
+            _loadContentWorker.OnCompleted += new LoadContentCompleted(_loadImageWorker.Run);
             _loadImageWorker.OnCompleted += new LoadImageCompleted(_loadImageWorker_OnCompleted);
 
             _thumbnailWorkerState = new ThumbnailWorkerState(this, _lvItemDict);
 
-            this.View = View.LargeIcon;
-            //this.View = View.Details;
+            //this.View = View.LargeIcon;
+            this.View = View.Details;
 
             //Detail View
             this.Columns.Add(new ColumnHeader());
@@ -118,7 +115,7 @@ namespace MoonView.Thumbnail
             this.LargeImageList.ColorDepth = ColorDepth.Depth32Bit;
             //Small image list
             this.SmallImageList = new ImageList();
-            this.SmallImageList.ImageSize = new Size(32, 32);
+            this.SmallImageList.ImageSize = new Size(48, 48);
             this.SmallImageList.ColorDepth = ColorDepth.Depth32Bit;
 
             //ThumbnailView 
@@ -134,7 +131,7 @@ namespace MoonView.Thumbnail
             _thumbnailSorter.ColumnDataType = "String";
             _thumbnailSorter.SortOrder = SortOrder.Ascending;
 
-            this.ListViewItemSorter = _thumbnailSorter; //Enable sorting
+            //this.ListViewItemSorter = _thumbnailSorter; //Enable sorting
 
             //Events
             //this.ItemActivate += new EventHandler(ThumbnailView_ItemActivate);
@@ -181,8 +178,15 @@ namespace MoonView.Thumbnail
             //set the column to the column that is clicked
             _thumbnailSorter.Column = e.Column;
 
-            //Call the ListView's Sort Method, perform sorting 
-            this.Sort();
+            //Call the ListView's Sort Method, perform sorting
+            Sort();
+        }
+
+        public new void Sort()
+        {
+            this.ListViewItemSorter = _thumbnailSorter;
+            base.Sort();
+            this.ListViewItemSorter = null;
         }
 
         /// <summary>
@@ -196,12 +200,15 @@ namespace MoonView.Thumbnail
                 return;
             if (this.SelectedItems[0] == null)
                 return;
-            IFSInfo fsInfo = this._lvItemDict[this.SelectedItems[0]];
-            _thumbnailWorkerState.Cancel = false;
+            if (!_lvItemDict.ContainsKey(this.SelectedItems[0]))
+                return; //TODO Add assertion
+
+            IFSInfo fsInfo = _lvItemDict[this.SelectedItems[0]];
+
             //Directory
             if (fsInfo is IDirectoryInfo)
                 _parent.ShowDirectory(this, (IDirectoryInfo)fsInfo);
-                //ShowDirectory((IDirectoryInfo) fsInfo);
+                
             //File
             if (fsInfo is IFileInfo)
             {
@@ -222,8 +229,8 @@ namespace MoonView.Thumbnail
             _loading = true;            
             _thumbnailWorkerState.Cancel = false;
             _thumbnailWorkerState.DirectoryInfo = dirInfo;
-            //this.ListViewItemSorter = null; //Disable sorting until load complete
-            _clearListWorker.Run(this, _thumbnailWorkerState);
+
+            _loadContentWorker.Run(this, _thumbnailWorkerState);
         }
 
         /// <summary>
@@ -249,7 +256,7 @@ namespace MoonView.Thumbnail
         public void ShowDirectory(IDirectoryInfo dirInfo)
         {
             if (_loading)
-                this.AbortLoading();
+                this.AbortLoading();            
             _dirInfo = dirInfo;
             _showTimer.Start();
         }
