@@ -66,13 +66,20 @@ namespace MoonView
         {
             _currIndex++;
             UpdateButtonStatus();
-            _parent.ShowDirectory(this, _dirInfoHistory[_currIndex]);
+            ShowCurrentDirInfo();
         }
 
         void _backBtn_Click(object sender, EventArgs e)
         {
             _currIndex--;
             UpdateButtonStatus();
+            ShowCurrentDirInfo();
+        }
+
+        void ShowCurrentDirInfo()
+        {
+            if (_dirInfoHistory.Count == 0 || _dirInfoHistory.Count <= _currIndex)
+                return;
             _parent.ShowDirectory(this, _dirInfoHistory[_currIndex]);
         }
 

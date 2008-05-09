@@ -57,7 +57,7 @@ namespace MoonView.Thumbnail
         //ClearListWorker _clearListWorker;
         LoadContentWorker _loadContentWorker;
         LoadImageWorker _loadImageWorker;
-        IDirectoryInfo _dirInfo;
+        IDirectoryInfo _currDirInfo;
         ThumbnailWorkerState _thumbnailWorkerState;
         ThumbnailItemComparer _thumbnailSorter = new ThumbnailItemComparer();
 
@@ -71,11 +71,17 @@ namespace MoonView.Thumbnail
         //Collection
         Queue<object[]> _contentQueue = new Queue<object[]>();
         Queue<object[]> _imageQueue = new Queue<object[]>();
+        Dictionary<string, string> _lastSelectedItem = new Dictionary<string, string>();
         Dictionary<ListViewItem, IFSInfo> _lvItemDict = new Dictionary<ListViewItem, IFSInfo>();
 
         public bool IsBusy
         {
             get { return _loading; }
+        }
+
+        public IDirectoryInfo CurrentDirectoryInfo
+        {
+            get { return _currDirInfo; }
         }
 
         /// <summary>
@@ -135,8 +141,19 @@ namespace MoonView.Thumbnail
 
             //Events
             //this.ItemActivate += new EventHandler(ThumbnailView_ItemActivate);
+            this.SelectedIndexChanged += new EventHandler(ThumbnailView_SelectedIndexChanged);
             this.MouseDoubleClick += new MouseEventHandler(ThumbnailView_MouseDoubleClick);
             this.ColumnClick += new ColumnClickEventHandler(ThumbnailView_ColumnClick);
+        }
+
+        void ThumbnailView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.SelectedItems.Count == 0)
+                return;
+            if (!_lastSelectedItem.ContainsKey(_currDirInfo.FullPath))
+                _lastSelectedItem.Add(_currDirInfo.FullPath, this.SelectedItems[0].Text);
+            else
+                _lastSelectedItem[_currDirInfo.FullPath] = this.SelectedItems[0].Text;
         }
 
         /// <summary>
@@ -161,7 +178,7 @@ namespace MoonView.Thumbnail
             //Column's Index starts with 0
             if (e.Column == 0 || e.Column == 2)
                 _thumbnailSorter.ColumnDataType = "String";
-            else if (e.Column == 1 )
+            else if (e.Column == 1)
                 _thumbnailSorter.ColumnDataType = "Numeric";
             else if (e.Column == 3)
                 _thumbnailSorter.ColumnDataType = "DateTime";
@@ -208,7 +225,7 @@ namespace MoonView.Thumbnail
             //Directory
             if (fsInfo is IDirectoryInfo)
                 _parent.ShowDirectory(this, (IDirectoryInfo)fsInfo);
-                
+
             //File
             if (fsInfo is IFileInfo)
             {
@@ -226,7 +243,7 @@ namespace MoonView.Thumbnail
         /// <param name="dirInfo"></param>
         void LoadDirectory(IDirectoryInfo dirInfo)
         {
-            _loading = true;            
+            _loading = true;
             _thumbnailWorkerState.Cancel = false;
             _thumbnailWorkerState.DirectoryInfo = dirInfo;
 
@@ -239,6 +256,18 @@ namespace MoonView.Thumbnail
         void _loadImageWorker_OnCompleted()
         {
             _loading = false;
+            if (!_lastSelectedItem.ContainsKey(_currDirInfo.FullPath))
+                return;
+            foreach (ListViewItem item in this.Items)
+            {
+                if (item.Text.Equals(_lastSelectedItem[_currDirInfo.FullPath]))
+                {
+                    this.TopItem = item;
+                    item.Selected = true;
+                    item.Focused = true;
+                    break;
+                }
+            }
         }
 
         /// <summary>
@@ -256,8 +285,8 @@ namespace MoonView.Thumbnail
         public void ShowDirectory(IDirectoryInfo dirInfo)
         {
             if (_loading)
-                this.AbortLoading();            
-            _dirInfo = dirInfo;
+                this.AbortLoading();
+            _currDirInfo = dirInfo;
             _showTimer.Start();
         }
 
@@ -272,7 +301,7 @@ namespace MoonView.Thumbnail
             if (_loading)
                 return;
             _showTimer.Stop();
-            LoadDirectory(_dirInfo);
+            LoadDirectory(_currDirInfo);
         }
 
         public void SetView(View view)

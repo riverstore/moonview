@@ -6,13 +6,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace MoonView
 {
     public static class Utility
     {
+        #region Images
         //TODO Use hashtable for image
-
         static string SMALL_ICON_DIRECTORY = @"Icons\Vista-Inspirate_1.0\32x32";
         static string LARGE_ICON_DIRECTORY = @"Icons\Vista-Inspirate_1.0\96x96";
         static Dictionary<string, Bitmap> _smallMimeIconDict = new Dictionary<string, Bitmap>();
@@ -62,7 +63,7 @@ namespace MoonView
 
             SMALL_ICON_DIRECTORY = System.IO.Path.Combine(exePath, @"Icons\Vista-Inspirate_1.0\32x32");
             LARGE_ICON_DIRECTORY = System.IO.Path.Combine(exePath, @"Icons\Vista-Inspirate_1.0\96x96");
-            
+
             FolderIconSmall = new Bitmap(System.IO.Path.Combine(exePath, @"Icons\Vista-Inspirate_1.0\32x32\filesystems\folder.png"));
             FolderIconLarge = new Bitmap(System.IO.Path.Combine(exePath, @"Icons\Vista-Inspirate_1.0\96x96\filesystems\folder.png"));
             DiskIconSmall = new Bitmap(System.IO.Path.Combine(exePath, @"Icons\Vista-Inspirate_1.0\32x32\devices\hdd_mount.png"));
@@ -76,7 +77,7 @@ namespace MoonView
 
             //Archive
             LoadMimeIcons("rar", @"mimetypes\rar.png");
-            LoadMimeIcons("zip",@"mimetypes\zip.png");
+            LoadMimeIcons("zip", @"mimetypes\zip.png");
         }
 
         private static void LoadMimeIcons(string extension, string filePath)
@@ -138,7 +139,7 @@ namespace MoonView
             }
         }
 
-        private static Regex _reXp = new Regex(@"([\w\W]+?)([\d]+)([\w\W]*?)\.([\w]+)", RegexOptions.IgnoreCase);
+        private static Regex _reXp = new Regex(@"([\w\W]+?)([\d]+)([a-zA-Z\W]*?)\.([\w]+)", RegexOptions.IgnoreCase);
         public static int CompareStringXp(string strX, string strY)
         {
             strX = strX.Replace(" ", ""); //Remove space
@@ -158,5 +159,47 @@ namespace MoonView
 
             return int.Parse(matchX.Groups[2].Value) - int.Parse(matchY.Groups[2].Value);
         }
+        #endregion
+
+        #region Config
+
+        static string CONFIG_FILE = "moonview.xml";
+        static Config _config;
+
+        public static Config Config
+        {
+            get { return _config; }
+        }
+
+        public static void LoadConfig()
+        {
+            try
+            {
+                XmlSerializer xs = new XmlSerializer(typeof(Config));
+                using (FileStream fs = File.OpenRead(CONFIG_FILE))
+                    _config = (Config)xs.Deserialize(fs);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(ex.ToString());
+                _config = new Config();
+            }
+        }
+
+        public static void SaveConfig()
+        {
+            try
+            {
+                XmlSerializer xs = new XmlSerializer(typeof(Config));
+                File.Delete(CONFIG_FILE);
+                using (FileStream fs = File.OpenWrite(CONFIG_FILE))
+                    xs.Serialize(fs, _config);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(ex.ToString());
+            }
+        }
+        #endregion
     }
 }

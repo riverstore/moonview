@@ -60,6 +60,7 @@
     <Compile Include="Compression\SevenZipReader.cs" />
     <Compile Include="Compression\Unrar.cs" />
     <Compile Include="Compression\UnrarReader.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="Forms\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -106,10 +107,10 @@
     <Compile Include="Thumbnail\ThumbnailView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Forms\ViewForm.cs">
+    <Compile Include="ViewForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ViewForm.Designer.cs">
+    <Compile Include="ViewForm.Designer.cs">
       <DependentUpon>ViewForm.cs</DependentUpon>
     </Compile>
     <None Include="Old\Thumbnail.cs" />
@@ -134,7 +135,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ViewForm.resx">
+    <EmbeddedResource Include="ViewForm.resx">
       <DependentUpon>ViewForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>

@@ -68,18 +68,18 @@ namespace MoonView.Forms
             _fileInfoList.Clear();
             _currIndex = 0;
             IFileInfo[] fileInfoArray = _dirInfo.Files;
-            for (int i = 0; i < fileInfoArray.Length; i++)
+            foreach(IFileInfo thisFileInfo in fileInfoArray)
             {
-                IFileInfo thisFileInfo = fileInfoArray[i];
                 if (Utility.IsSupported(thisFileInfo.Extension))
                     _fileInfoList.Add(thisFileInfo);
             }
             _fileInfoList.Sort(_comparer);
-            for (int i = 0; i < _fileInfoList.Count; i++)
+            int i = 0;
+            foreach(IFileInfo thisFileInfo in _fileInfoList)
             {
-                IFileInfo thisFileInfo = _fileInfoList[i];
                 if (fileInfo.Name.Equals(thisFileInfo.Name))
                     _currIndex = i;
+                i = i + 1;
             }
             UpdateButtonStatus();
             ShowImage(_currIndex);
