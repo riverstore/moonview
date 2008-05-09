@@ -24,7 +24,6 @@ namespace MoonView
         ViewForm _viewForm;
         Navigation _navigation;
         AboutBox _aboutBox;
-        BackgroundWorker _worker;
 
         /// <summary>
         /// Constructor
@@ -32,23 +31,23 @@ namespace MoonView
         public MoonViewForm(string[] args)
         {
             InitializeComponent();
+            Utility.LoadConfig();
             Utility.Initialise();
+
             _aboutBox = new MoonView.Forms.AboutBox();
             this.directoryTreeView1.Initialise(this);
             this.thumbnailView1.Initialise(this);
             _viewForm = new ViewForm();
             _navigation = new Navigation(this, BackButton, ForwardButton, UpButton, RefreshButton);
 
+            this.Top = Utility.Config.Top;
+            this.Left = Utility.Config.Left;
+            this.Size = Utility.Config.Size;
+
             if (args.Length < 1)
-                Open(this, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
+                Open(this, Utility.Config.LastDirectoryPath);
             else
                 Open(this, args[0]); 
-        }
-
-        void _timer_Tick(object sender, EventArgs e)
-        {
-
-            //throw new NotImplementedException();
         }
 
         public void Open(object sender, string path)
@@ -167,6 +166,13 @@ namespace MoonView
             thumbnailView1.AbortLoading();
             if (thumbnailView1.IsBusy)
                 Thread.Sleep(100);
+
+            Utility.Config.Top = this.Top;
+            Utility.Config.Left = this.Left;
+
+            Utility.Config.Size = this.Size;
+            Utility.Config.LastDirectoryPath = thumbnailView1.CurrentDirectoryInfo.FullPath;
+            Utility.SaveConfig();
 
             //Clean up
             string tempDir = SysPath.Combine(Environment.CurrentDirectory, "Temp");
