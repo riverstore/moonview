@@ -1,0 +1,75 @@
+﻿<Window x:Class="MoonView.WinView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="ViewWindow" Height="480" Width="640" 
+    Closing="Window_Closing" 
+    SizeChanged="Window_SizeChanged"
+    Background="Black"
+    Foreground="White">
+    <DockPanel>
+        <DockPanel.Resources>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="Background" Value="Black" />
+                <Setter Property="Foreground" Value="White" />
+            </Style>
+        </DockPanel.Resources>
+
+        <StackPanel Orientation="Horizontal" Background="Black" Height="60" DockPanel.Dock="Top" KeyDown="StackPanel_KeyDown">
+            <!-- Back button -->
+            <Button Name="ButtonPrevious" Click="ButtonPrevious_Click">
+                <StackPanel Orientation="Vertical" Margin="3">
+                    <Image Source="Images/back.png"/>
+                    <TextBlock TextAlignment="Center">Previous</TextBlock>
+                </StackPanel>
+            </Button>
+            <!-- Next button -->
+            <Button Name="ButtonNext" Click="ButtonNext_Click">
+                <StackPanel Orientation="Vertical" Margin="3">
+                    <Image Source="Images/next.png"/>
+                    <TextBlock TextAlignment="Center">Next</TextBlock>
+                </StackPanel>
+            </Button>
+            <!-- Zoom in button -->
+            <Button Name="BtnZoomIn" Click="BtnZoomIn_Click">
+                <StackPanel Orientation="Vertical" Margin="3">
+                    <Image Source="Images/viewmag+.png"/>
+                    <TextBlock TextAlignment="Center">Zoom In</TextBlock>
+                </StackPanel>
+            </Button>
+            <!-- Zoom out button -->
+            <Button Name="BtnZoomOut" Click="BtnZoomOut_Click">
+                <StackPanel Orientation="Vertical" Margin="3">
+                    <Image Source="Images/viewmag-.png"/>
+                    <TextBlock TextAlignment="Center">Zoom Out</TextBlock>
+                </StackPanel>
+            </Button>
+            <!-- Zoom Fit Width button -->
+            <Button Name="BtnFitWidth" Click="BtnFitWidth_Click">
+                <StackPanel Orientation="Vertical" Margin="3">
+                    <Image Source="Images/viewmagfit.png"/>
+                    <TextBlock TextAlignment="Center">Fit Width</TextBlock>
+                </StackPanel>
+            </Button>
+            <!-- Zoom Fit Height button -->
+            <Button Name="BtnFitHeight" Click="BtnFitHeight_Click">
+                <StackPanel Orientation="Vertical" Margin="3">
+                    <Image Source="Images/viewmagfit.png"/>
+                    <TextBlock TextAlignment="Center">Fit Height</TextBlock>
+                </StackPanel>
+            </Button>
+            <!-- Zoom Fit Height button -->
+            <Button Name="BtnNoZoom" Click="BtnNoZoom_Click">
+                <StackPanel Orientation="Vertical" Margin="3">
+                    <Image Source="Images/viewmag1.png"/>
+                    <TextBlock TextAlignment="Center">No Zoom</TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <StatusBar Height="20" DockPanel.Dock="Bottom" Background="Black">
+
+        </StatusBar>
+            <ScrollViewer Name="SViewer_Image" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Width="Auto" Height="Auto" PreviewKeyDown="SViewer_Image_PreviewKeyDown">
+                <Image Name="ImgView" Source="{Binding Path=Image}" />
+            </ScrollViewer>
+    </DockPanel>
+</Window>

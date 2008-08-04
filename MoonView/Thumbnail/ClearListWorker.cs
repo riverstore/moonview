@@ -10,8 +10,8 @@ namespace MoonView.Thumbnail
     public class ClearListWorker
     {
         event ClearListCompleted _clearListCompleted;
-        ThumbnailView _thumbnailView;
-        ThumbnailWorkerState _tnvState;
+        ThumbnailView _thumbnailView = null;
+        ThumbnailWorkerState _tnvState = null;
         BackgroundWorker _bgWorker;
 
         public event ClearListCompleted OnCompleted

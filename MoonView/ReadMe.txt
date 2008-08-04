@@ -15,7 +15,7 @@ MoonView is a C# based image viewer software. MoonView will be implemented in .N
 4. Credit:
 	MoonView uses 3rd party libraries or components, here are the details:
 
-	a. SharpZipLib by Mike Krueger
+	a. SharpZipLib - by Mike Krueger
 	http://www.icsharpcode.net/OpenSource/SharpZipLib/Default.aspx
 
 	b. unrar.dll - by Alexander L. Roshal
@@ -26,3 +26,6 @@ MoonView is a C# based image viewer software. MoonView will be implemented in .N
 
 	d. Vista-inspirate icons - by Alexandre Moore
 	http://www.kde-look.org/content/show.php/Vista-Inspirate?content=31585
+
+    e. 7zip port - by Hugh Perkins 
+	http://manageddreams.com/csai/ModReader.7z

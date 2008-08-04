@@ -1,0 +1,191 @@
+﻿<Window 
+    x:Class="MoonView.WinMain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:er="clr-namespace:MoonView" 
+    xmlns:m="clr-namespace:System.Windows.Media.Imaging;assembly=PresentationCore"
+    Title="MoonView" 
+    Width="640" 
+    Height="600"
+    Loaded="OnLoaded" 
+    Closing="Window_Closing"
+    Background="Black"
+    Foreground="White">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Black" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <!-- Main photo catalog view -->
+        <Style TargetType="{x:Type ListBox}" x:Key="PhotoListBoxStyle">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBox}" >
+                        <WrapPanel Margin="5" IsItemsHost="True" Orientation="Horizontal" 
+                                   VerticalAlignment="Top" HorizontalAlignment="Stretch" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style for an individual generic item -->
+        <Style TargetType="{x:Type ListBoxItem}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}" >
+                        <Border SnapsToDevicePixels="True" HorizontalAlignment="Stretch" 
+                                VerticalAlignment="Stretch" Background="{TemplateBinding Background}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#88ffffff" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Thumbnail Image -->
+        <DataTemplate DataType="{x:Type er:ClsThumbnailImage}">
+            <Grid Margin="2" VerticalAlignment="Center" HorizontalAlignment="Center" Width="45" Height="45" >
+                <Rectangle Fill="White" Opacity="0.6" />
+                <Border Padding="2" BorderBrush="#22000000" BorderThickness="1">
+                    <Image Source="{Binding Thumbnail}"/>
+                </Border>
+            </Grid>
+        </DataTemplate>
+
+        <!-- Directory Item -->
+        <DataTemplate DataType="{x:Type er:ClsDirectoryItem}">
+            <StackPanel Orientation="Vertical" Width="135" Margin="0, 5, 0, 10">
+                <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Width="120" Height="120">
+                    <Border Padding="4" Background="Black" BorderBrush="White" BorderThickness="1">
+                        <Grid>
+                            <Image Source="Images/folder.png" />
+                            <ListBox ItemsSource="{Binding ThumbnailImages}" Style="{StaticResource PhotoListBoxStyle}" IsEnabled="False"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+                <Label Content="{Binding DirectoryName}" HorizontalAlignment="Center" Foreground="White"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- File Item -->
+        <DataTemplate DataType="{x:Type er:ClsFileItem}">
+            <StackPanel Orientation="Vertical" Width="135" Margin="0, 5, 0, 10">
+                <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Width="120" Height="120">
+                    <Border Padding="4" Background="Black" BorderBrush="White" BorderThickness="1">
+                        <Grid>
+                            <Image Source="{Binding Thumbnail}"/>
+                            <Label Margin="65, -90, 0, 0" Height="18" Padding="2" HorizontalAlignment="Right" 
+                                   Content="{Binding Extension}" BorderThickness="1" BorderBrush="White"
+                                   Background="White" Foreground="Black"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+                <Label Content="{Binding FileName}" HorizontalAlignment="Center" Foreground="White"/>
+            </StackPanel>
+        </DataTemplate>
+        
+        
+    </Window.Resources>
+
+    <!-- =================================== Main panel ===================================== -->
+    <DockPanel Width="Auto" Height="Auto">
+        <!-- Status bar -->
+        <StatusBar Height="20" Width="Auto" DockPanel.Dock="Bottom" Padding="0" Margin="0" Background="Black">
+            <StackPanel Orientation="Horizontal">
+                <Label Name="ThumbnailCacheStatus" Height="20" Width="Auto" Padding="0" Margin="0" Foreground="White"/>
+                <Label Name="ImageCacheStatus" Height="20" Width="Auto" Padding="0" Margin="0" Foreground="White"/>
+            </StackPanel>
+        </StatusBar>
+        <StackPanel DockPanel.Dock="Top">
+            <Menu Height="20" Width="Auto" Background="Black">
+                <MenuItem Header="_File" Foreground="White">
+                    <MenuItem Header="_Exit" Click="MnuItmExit_Click" />
+                </MenuItem>
+                <MenuItem Header="_About" Foreground="White">
+                    <MenuItem Header="_About" Name="MnuItmAbout"/>
+                </MenuItem>
+            </Menu>
+            <StackPanel Orientation="Horizontal">
+                <!-- Back button -->
+                <Button Name="BtnBack" Click="BtnBack_Click">
+                    <StackPanel Orientation="Vertical" Margin="3">
+                        <Image Source="Images/back.png"/>
+                        <TextBlock TextAlignment="Center">Back</TextBlock>
+                    </StackPanel>
+                </Button>
+                <!-- Next button -->
+                <Button Name="BtnNext" Click="BtnNext_Click">
+                    <StackPanel Orientation="Vertical" Margin="3">
+                        <Image Source="Images/next.png"/>
+                        <TextBlock TextAlignment="Center">Next</TextBlock>
+                    </StackPanel>
+                </Button>
+                <!-- Up button -->
+                <Button Name="BtnUp" Click="BtnUp_Click">
+                    <StackPanel Orientation="Vertical" Margin="3">
+                        <Image Source="Images/up.png"/>
+                        <TextBlock TextAlignment="Center">Up</TextBlock>
+                    </StackPanel>
+                </Button>
+                <!-- Reload button -->
+                <Button Name="BtnReload" Click="BtnReload_Click">
+                    <StackPanel Orientation="Vertical" Margin="3">
+                        <Image Source="Images/reload.png"/>
+                        <TextBlock TextAlignment="Center">Reload</TextBlock>
+                    </StackPanel>
+                </Button>
+                <!-- -->
+                
+            </StackPanel>
+        </StackPanel>
+        <Grid Width="Auto" Height="Auto">
+            <Grid.ColumnDefinitions>
+                <!-- <ColumnDefinition Width="150*" />
+                <ColumnDefinition Width="2" />
+                -->
+                <ColumnDefinition Width="400*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TreeView Name="TreeView_Explorer" Height="Auto" Width="0" Grid.Column="0">
+            </TreeView>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent" ShowsPreview="True"/>
+            <DockPanel Grid.Column="2" Width="Auto" Margin="1">
+                <Grid DockPanel.Dock="Top" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="70" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBox Padding="3" Name="TextBox_Path" Grid.Column="0" KeyDown="TextBox_Path_KeyDown" Foreground="White" Background="Black"></TextBox>
+                    <Button Margin="1" Name="BtnPathEnter" Grid.Column="1" Click="BtnPathEnter_Click">Enter</Button>
+                </Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ListBox Name="ThumbnailListBox" Style="{StaticResource PhotoListBoxStyle}" MouseDoubleClick="ThumbnailListBox_MouseDoubleClick" KeyDown="ThumbnailListBox_KeyDown">
+                        <!-- 
+                        <ListBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Edit" />
+                            </ContextMenu>
+                        </ListBox.ContextMenu>
+                        -->
+                    </ListBox>
+                </ScrollViewer>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</Window>

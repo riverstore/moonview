@@ -121,7 +121,7 @@ namespace MoonView.Thumbnail
             this.LargeImageList.ColorDepth = ColorDepth.Depth32Bit;
             //Small image list
             this.SmallImageList = new ImageList();
-            this.SmallImageList.ImageSize = new Size(48, 48);
+            this.SmallImageList.ImageSize = new Size(24, 24);
             this.SmallImageList.ColorDepth = ColorDepth.Depth32Bit;
 
             //ThumbnailView 
