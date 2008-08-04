@@ -5,6 +5,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoonView", "MoonView.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "7ZipLib", "..\7ZipLib\7ZipLib.csproj", "{2DBA9377-4C1D-4BB5-A453-F5EC24F8240F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoonView.WPF", "..\MoonViewWPF\MoonView.WPF.csproj", "{8BD5B33B-13A6-4BAE-A545-9EE66264F455}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoonView.Utility", "..\MoonView.Utility\MoonView.Utility.csproj", "{7A86003F-0924-4CEA-89C9-12B50C5F8F46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoonView.FileSystem", "..\MoonView.FileSystem\MoonView.FileSystem.csproj", "{A888D21F-C467-4DDF-ABD7-8E9079D2D75A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +25,18 @@ Global
 		{2DBA9377-4C1D-4BB5-A453-F5EC24F8240F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DBA9377-4C1D-4BB5-A453-F5EC24F8240F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DBA9377-4C1D-4BB5-A453-F5EC24F8240F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BD5B33B-13A6-4BAE-A545-9EE66264F455}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BD5B33B-13A6-4BAE-A545-9EE66264F455}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BD5B33B-13A6-4BAE-A545-9EE66264F455}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BD5B33B-13A6-4BAE-A545-9EE66264F455}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A86003F-0924-4CEA-89C9-12B50C5F8F46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A86003F-0924-4CEA-89C9-12B50C5F8F46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A86003F-0924-4CEA-89C9-12B50C5F8F46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A86003F-0924-4CEA-89C9-12B50C5F8F46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A888D21F-C467-4DDF-ABD7-8E9079D2D75A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A888D21F-C467-4DDF-ABD7-8E9079D2D75A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A888D21F-C467-4DDF-ABD7-8E9079D2D75A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A888D21F-C467-4DDF-ABD7-8E9079D2D75A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

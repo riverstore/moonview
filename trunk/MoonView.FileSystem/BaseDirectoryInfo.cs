@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.IO;
 
-namespace MoonView.Path
+namespace MoonView.FileSystem
 {
     public class BaseDirectoryInfo : IDirectoryInfo
     {

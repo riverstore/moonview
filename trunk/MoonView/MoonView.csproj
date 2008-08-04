@@ -60,7 +60,6 @@
     <Compile Include="Compression\SevenZipReader.cs" />
     <Compile Include="Compression\Unrar.cs" />
     <Compile Include="Compression\UnrarReader.cs" />
-    <Compile Include="Config.cs" />
     <Compile Include="Forms\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -73,7 +72,6 @@
     <Compile Include="Path\SevenZipDirectoryInfo.cs" />
     <Compile Include="Path\SevenZipFileInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility.cs" />
     <Compile Include="MoonViewForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -96,7 +94,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Ratio.cs" />
     <None Include="Old\SdlImageBox.cs" />
     <None Include="Old\SdlRectangle.cs" />
     <Compile Include="Thumbnail\ClearListWorker.cs" />
@@ -224,6 +221,10 @@
     <ProjectReference Include="..\7ZipLib\7ZipLib.csproj">
       <Project>{2DBA9377-4C1D-4BB5-A453-F5EC24F8240F}</Project>
       <Name>7ZipLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MoonView.Utility\MoonView.Utility.csproj">
+      <Project>{7A86003F-0924-4CEA-89C9-12B50C5F8F46}</Project>
+      <Name>MoonView.Utility</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
