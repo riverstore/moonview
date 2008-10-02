@@ -83,6 +83,7 @@ namespace MoonView
                     string oldestKey = _keyList[0];
                     _keyList.RemoveAt(0);
                     _thumbnailDict.Remove(oldestKey);
+                    GC.Collect(GC.MaxGeneration);
                 }
                 _thumbnailDict.Add(key, thumbnail);
                 _keyList.Add(key);

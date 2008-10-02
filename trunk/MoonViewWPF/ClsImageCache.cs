@@ -70,10 +70,10 @@ namespace MoonView
                     image.StreamSource = item.Stream;
                     image.EndInit();
                     image.StreamSource.Dispose();
+                    GC.Collect(GC.MaxGeneration);
                     image.Freeze();
 
-                    AddImage(item.ImageKey, image);
-                    
+                    AddImage(item.ImageKey, image);                    
                 }
             }
 

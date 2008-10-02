@@ -32,7 +32,11 @@ namespace MoonView
         void OnApplicationStartup(object sender, StartupEventArgs args)
         {
             //ImageLoader.CreateThread();
-            WinMain frmMain = new WinMain();
+            WinMain frmMain;
+            if (args.Args.Length > 0)
+                frmMain = new WinMain(args.Args[0]);
+            else
+                frmMain = new WinMain(null);    
             frmMain.Show();
             //frmMain.Photos = (PhotoCollection)(this.Resources["Photos"] as ObjectDataProvider).Data;
             //frmMain.Photos.Path = "E:\\My Documents\\My Pictures";
