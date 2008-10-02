@@ -100,6 +100,7 @@ namespace MoonView
                                 image.EndInit();
                                 image.StreamSource.Dispose();
                                 image.Freeze();
+                                GC.Collect(GC.MaxGeneration);
 
                                 ClsThumbnailCache.AddThumbnail(item.ThumbnailKey, image);
                             }

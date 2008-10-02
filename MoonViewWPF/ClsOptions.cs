@@ -24,9 +24,9 @@ namespace MoonView
     public static class ClsOptions
     {
         /// <summary>Maximum number of cached thumbnails</summary>
-        public static int MaxCachedThumbnail = 3000;
+        public static int MaxCachedThumbnail = 500;
 
         /// <summary>Maximum number of cached images</summary>
-        public static int MaxCachedImage = 20;
+        public static int MaxCachedImage = 4;
     }
 }

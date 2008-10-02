@@ -28,7 +28,7 @@ namespace MoonView.Compression
                     try
                     {
                         //Unrar file in temporary directory
-                        string tempDir = System.IO.Path.Combine(Environment.CurrentDirectory, "Temp");
+                        string tempDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Temp");
                         unrar.DestinationPath = tempDir;
                         unrar.Open(rarPath, ClsUnrar.OpenMode.Extract);
                         // Get destination from user

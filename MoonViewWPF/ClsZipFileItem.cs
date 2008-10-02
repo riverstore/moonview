@@ -43,7 +43,7 @@ namespace MoonView
         {
             get
             {
-                MemoryStream ms = null;
+                MemoryStream ms = new MemoryStream();
                 using (ZipInputStream zs = new ZipInputStream(File.OpenRead(_zipPath)))
                 {
                     ZipEntry entry;
@@ -51,8 +51,9 @@ namespace MoonView
                     {
                         if (!entry.IsFile || entry.Name != _entry.Name)
                             continue;
+                        //else
+                        //    break;
 
-                        ms = new MemoryStream((int)entry.Size);
                         byte[] buffer = new byte[8192];
                         while (true)
                         {
@@ -65,8 +66,6 @@ namespace MoonView
                         ms.Position = 0;
                     }
                 }
-                if (ms == null)
-                    ms = new MemoryStream(0);
                 return ms;
             }
         }

@@ -39,8 +39,6 @@ namespace MoonView
     /// </summary>
     public partial class WinMain : Window
     {
-        private string _path;
-
         private ClsNavTracker _navTracker;
         private WinView _viewWindow;
         private Binding _fsItemBind;        
@@ -49,14 +47,18 @@ namespace MoonView
         //private Binding _textBind;
         //private PhotoCollection Photos;
 
-        public WinMain()
+        public WinMain(string filePath)
         {
             InitializeComponent();
             //ThumbnailCache.Initialize();
 
             //Set current path
             //TODO Open last path
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);            
+            string path;
+            if (filePath != null)
+                path = filePath;
+            else
+                path = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);            
 
             _viewWindow = new WinView();
             ClsThumbnailLoader.WinMain = this;
@@ -73,6 +75,8 @@ namespace MoonView
             //TextBox_Path.SetBinding(TextBox.TextProperty, _textBind);
 
             this.Load(path);
+            //TODO Show selected file after open
+            //if (filePath != null && Utility.IsSupported(System.IO.Path.GetExtension(filePath))            
         }
 
         private void Shutdown()
@@ -88,12 +92,46 @@ namespace MoonView
 
         private void Load(string path, bool addToNav)
         {
+            string imgPath = null;
+            string dirPath;
+
+
+            if (File.Exists(path))
+            {
+                if (Utility.IsArchive(System.IO.Path.GetExtension(path)))
+                    dirPath = path;
+                else
+                {
+                    dirPath = System.IO.Path.GetDirectoryName(path);
+                    if (Utility.IsSupported(System.IO.Path.GetExtension(path)))
+                        imgPath = path;
+                }
+            }
+            else if (Directory.Exists(path))
+                dirPath = path;
+            else
+                return; //TODO Log path not found error message
+
             if (addToNav)
-                _navTracker.AddCurrentPath(path);
-            _path = path;
-            TextBox_Path.Text = path; //TODO Use binding instead of set?                    
-            ClsThumbnailLoader.Stop();
-            _fsColl.Update(_path);
+                _navTracker.AddCurrentPath(dirPath);
+            TextBox_Path.Text = dirPath; //TODO Use binding instead of set?                    
+
+            ClsThumbnailLoader.Stop();            
+            _fsColl.Update(dirPath);
+
+            if (imgPath != null) //Show image
+            {
+                foreach (ClsFileSystemItem item in _fsColl)
+                {
+                    if (System.IO.Path.GetFileName(item.Path).Equals(System.IO.Path.GetFileName(imgPath))) //TODO Need refactor
+                    {
+                        ThumbnailListBox.SelectedItem = item;
+                        _viewWindow.Show(ThumbnailListBox);
+                        break;
+                    }
+                }
+            }
+
             ClsThumbnailLoader.Load();
             UpdateNavBtns();
         }

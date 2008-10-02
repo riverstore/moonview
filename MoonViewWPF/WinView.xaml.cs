@@ -73,7 +73,7 @@ namespace MoonView
                 this.Show();
         }
 
-        void _listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void _listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_listBox.SelectedItem is ClsFileItem)
             {
@@ -82,6 +82,7 @@ namespace MoonView
                 {
                     _image = item.Image;
                     ImgView.Source = _image;
+                    this.Title = string.Format("ViewWindow - {0}", item.Path);
                     Rescale();
                 }
             }
